@@ -517,11 +517,12 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_what_you_ll_build">What you’ll build</a></li>
 <li><a href="#_what_you_ll_need">What you’ll need</a></li>
-<li><a href="#_creating_the_project">Creating the project</a></li>
-<li><a href="#_adding_dependencies">Adding dependencies</a></li>
-<li><a href="#_running_unit_tests">Running unit tests</a></li>
-<li><a href="#_source_and_javadoc_jars">Source and Javadoc JARs</a></li>
+<li><a href="#_create_a_new_java_library_project">Create a new Java library project</a></li>
+<li><a href="#_build_the_library">Build the library</a></li>
+<li><a href="#_configure_the_jar">Configure the JAR</a></li>
+<li><a href="#_consume_the_library">Consume the library</a></li>
 <li><a href="#_summary">Summary</a></li>
+<li><a href="#_next_steps">Next steps</a></li>
 </ul>
 </div>
 </div>
@@ -529,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Gradle is a flexible tool that allows you to build anything, but it’s early focus was on Java. So it has historically had very strong support for building anything Java-related. This guide will show you how to build a simple Java library, from source code, through testing, to packaging as a JAR file.</p>
+<p>This guide walks you through the process of using Gradle to creating a Java library project that produces a JAR (Java Archive).</p>
 </div>
 </div>
 </div>
@@ -537,10 +538,7 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_what_you_ll_build"><a class="anchor" href="#_what_you_ll_build"></a>What you’ll build</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To keep it simple, you’ll be creating a Java library containing a single class that performs iterative hashing. In this case that means applying the SHA-256 algorithm multiple times to a piece of text, hashing the result of the previous hash on each iteration after the first. This is a technique used sometimes to make the overall hash take a long time via lots of iterations, impeding brute force attacks on username and password combinations.</p>
-</div>
-<div class="paragraph">
-<p>At the end of the of the guide, you’ll have a packaged JAR file that you can reuse in other projects.</p>
+<p>You&#8217;ll write a simple Java class and then use Gradle to compile and package it into a new library named <code>mylib</code>. The result will be a JAR file containing the compiled class and a default manifest file. Along the way, you&#8217;ll configure Gradle to include the library <em>version</em> in the name of the JAR file and in the manifest. When complete, you&#8217;ll verify that the library is well-formed by consuming it in a basic command-line application.</p>
 </div>
 </div>
 </div>
@@ -550,65 +548,127 @@ table.CodeRay td.code>pre{padding:0}
 <div class="ulist">
 <ul>
 <li>
-<p>About [TODO] minutes</p>
+<p>About 5 minutes</p>
 </li>
 <li>
-<p>A text editor or Java IDE</p>
+<p>A text editor</p>
 </li>
 <li>
-<p>A Java Runtime Environment (JRE) installed, version 1.7 or higher</p>
+<p>The <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK), version 1.7 or better</p>
 </li>
 <li>
-<p>Gradle installed</p>
-</li>
-<li>
-<p>(Optional) The Buildship plugin if you want to work within Eclipse</p>
+<p>Gradle version 3.0 or better</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>Note that IntelliJ has built-in support for Gradle, so you don’t need anything extra.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_creating_the_project"><a class="anchor" href="#_creating_the_project"></a>Creating the project</h2>
+<h2 id="_create_a_new_java_library_project"><a class="anchor" href="#_create_a_new_java_library_project"></a>Create a new Java library project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can easily add a Gradle build to an existing Java project or create a new Gradle-based Java project with your IDE, but for this guide you’ll make use of Gradle’s project templates to create a skeleton Java library project.</p>
+<p>Create a new project directory named <code>mylib</code> and initialize the directory structure that will hold your library classes, for example by running the following commands on a Unix-like system:</p>
 </div>
-<div class="paragraph">
-<p>Start by creating a new directory for your project, switching to that directory, and then running</p>
-</div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>gradle init --type java-library</pre>
+<pre class="CodeRay highlight"><code data-lang="shell">mkdir mylib
+cd mylib
+mkdir -p src/main/java/org/example/mylib</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can use an IDE to create the Java library project for you as well.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now create the <code>Greeter</code> class using the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/org/example/mylib/Greeter.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.mylib</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Greeter</span> {
+    <span class="directive">private</span> <span class="predefined-type">String</span> name;
+
+    <span class="directive">public</span> Greeter(<span class="predefined-type">String</span> name) { <span class="local-variable">this</span>.name = name; }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getGreeting() { <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + <span class="local-variable">this</span>.name; }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will do several important things:</p>
+<p>You now have all the necessary components for a standard Java library project. The next step is to create a build for it, so add a <code>build.gradle</code> file in the root of the project and have it apply Gradle&#8217;s Java plugin with the following content:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Create a build file, <em>build.gradle</em>, describing how to build the project</p>
-</li>
-<li>
-<p>Create a <em>settings.gradle</em> file that configures the project name</p>
-</li>
-<li>
-<p>Set up the <a href="https://docs.gradle.org/current/userguide/gradle_wrapper.html">Gradle wrapper</a> so other users don’t need Gradle installed to run the build</p>
-</li>
-<li>
-<p>Create the standard directory structure for a Java project, which matches the Apache Maven convention, i.e. <em>src/main/java</em> etc.</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">java</span><span class="delimiter">'</span></span></code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>You will also find <em>src/main/java/Library.java</em> and <em>src/test/java/LibraryTest.java</em> files. You should delete these now as you won’t be using them.</p>
+<p>Once you&#8217;ve saved the file, you&#8217;re ready to build your library.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_build_the_library"><a class="anchor" href="#_build_the_library"></a>Build the library</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Start by running the command <code>gradle jar</code>, like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gradle jar
+:compileJava
+:processResources UP-TO-DATE
+:classes
+:jar
+
+BUILD SUCCESSFUL</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>The next step is to find out what things you can do with the build. You have a choice at this point: use an IDE or work with a text editor and the command line. If you want to use an IDE, import the project now, configuring it to use the Gradle wrapper. The rest of this guide will assume you are using a text editor and the command line.</p>
+<p>The output is telling you that running the assemble task results in Gradle:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>compiling the Java source code</p>
+</li>
+<li>
+<p>processing any resource files</p>
+</li>
+<li>
+<p>packaging everything up into a JAR file</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You can find your newly packaged JAR file in the <code>build/libs</code> directory with the name <code>mylib.jar</code>. Verify that the JAR file is valid by running the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ jar tf build/libs/mylib.jar
+META-INF/
+META-INF/MANIFEST.MF
+org/
+org/example/
+org/example/Greeter.class</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see the required manifest file - <code>MANIFEST.MF</code> - and the compiled <code>Greeter</code> class.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -618,325 +678,141 @@ table.CodeRay td.code>pre{padding:0}
 </td>
 <td class="content">
 <div class="paragraph">
-<p>If you’re using Windows, then don’t include the <code>./</code> before <code>gradlew</code> in the example command lines that follow. That’s for Unix-like systems only. In other words, just run <code>gradlew …</code>.</p>
+<p>All of this happens without any configuration because the project follows a <a href="https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_project_layout">convention on project layout</a>. You can also change the project layout <a href="https://docs.gradle.org/current/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>To get Gradle to build stuff, you execute what are known as tasks. You won’t always know what tasks are available, though, so the best option is to run the <code>tasks</code> command like so:</p>
+<p>At this point, your library is ready to be consumed by other JVM-based projects, but there are a couple of improvements you can make first. We&#8217;ll look at those next.</p>
 </div>
-<div class="literalblock">
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configure_the_jar"><a class="anchor" href="#_configure_the_jar"></a>Configure the JAR</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You will often want the name of the JAR file to include the library version. This is easily achieved by setting a top-level <code>version</code> property in the build file, like so:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
 <div class="content">
-<pre>./gradlew tasks</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">java</span><span class="delimiter">'</span></span>
+
+version = <span class="string"><span class="delimiter">'</span><span class="content">0.1.0</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The first time you run this, Gradle will download and cache the appropriate version of Gradle. So you need to be online and it will take a little extra time. You might also see a line about starting the <a href="https://docs.gradle.org/current/userguide/gradle_daemon.html">Gradle Daemon</a>: this is perfectly normal.</p>
-</div>
-<div class="paragraph">
-<p>The <code>tasks</code> command will print out a list of the main tasks you can run. In the case of your new Java library project, the output will look like this:</p>
+<p>Re-running the <code>jar</code> task after a <code>clean</code> via this command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>:tasks
-
-------------------------------------------------------------
-All tasks runnable from root project
-------------------------------------------------------------
-
-Build tasks                                                                                   <i class="conum" data-value="1"></i><b>(1)</b>
------------
-assemble - Assembles the outputs of this project.
-build - Assembles and tests this project.
-buildDependents - Assembles and tests this project and all projects that depend on it.
-buildNeeded - Assembles and tests this project and all projects it depends on.
-classes - Assembles main classes.
-clean - Deletes the build directory.
-jar - Assembles a jar archive containing the main classes.
-testClasses - Assembles test classes.
-
-Build Setup tasks
------------------
-init - Initializes a new Gradle build. [incubating]
-wrapper - Generates Gradle wrapper files. [incubating]
-
-Documentation tasks
--------------------
-javadoc - Generates Javadoc API documentation for the main source code.
-
-Help tasks
-----------
-buildEnvironment - Displays all buildscript dependencies declared in root project 'new-java-gradle'.
-components - Displays the components produced by root project 'new-java-gradle'. [incubating]
-dependencies - Displays all dependencies declared in root project 'new-java-gradle'.
-dependencyInsight - Displays the insight into a specific dependency in root project 'new-java-gradle'.
-help - Displays a help message.
-model - Displays the configuration model of root project 'new-java-gradle'. [incubating]
-projects - Displays the sub-projects of root project 'new-java-gradle'.
-properties - Displays the properties of root project 'new-java-gradle'.
-tasks - Displays the tasks runnable from root project 'new-java-gradle'.
-
-Verification tasks
-------------------
-check - Runs all checks.
-test - Runs the unit tests.
-
-Rules
------
-Pattern: clean&lt;TaskName&gt;: Cleans the output files of a task.
-Pattern: build&lt;ConfigurationName&gt;: Assembles the artifacts of a configuration.
-Pattern: upload&lt;ConfigurationName&gt;: Assembles and uploads the artifacts belonging to a configuration.
-
-To see all tasks and more detail, run gradlew tasks --all
-
-To see more detail about a task, run gradlew help --task &lt;task&gt;
-
-BUILD SUCCESSFUL</pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The set of tasks you&#8217;ll be using in this guide</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>As you can see, you have a lot of tasks to choose from. We’ll focus on just a few of them in this guide, mostly from the Build Tasks group, which is the first group listed.</p>
-</div>
-<div class="paragraph">
-<p>Now run your first task with the following command:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>./gradlew assemble</pre>
+<pre>gradle clean jar</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you have deleted the existing source files, you’ll see the following output:</p>
+<p>will result in the build creating the file <code>build/libs/mylib-0.1.0.jar</code>.</p>
+</div>
+<div class="paragraph">
+<p>Another common requirement is to customize the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by adding the following code to the end of the build file:</p>
 </div>
 <div class="listingblock">
+<div class="title">build.gradle</div>
 <div class="content">
-<pre>:compileJava UP-TO-DATE
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-:jar UP-TO-DATE
-:assemble UP-TO-DATE
-
-BUILD SUCCESSFUL</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Each of the names prefixed with a colon - <code>:</code> - is a name of a task. The output is telling you that running the <code>assemble</code> task results in Gradle compiling the Java source code, processing any resource files, and packaging everything up into a JAR file. As there are no source files yet, the build doesn’t actually do anything. Let’s fix that.</p>
-</div>
-<div class="paragraph">
-<p>Create the file <em>src/main/java/org/example/Digester.java</em>, ensuring that its parent directories exist. Next, put the following text into that file:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example</span>;
-
-<span class="keyword">import</span> <span class="include">org.apache.commons.codec.digest.DigestUtils</span>;
-
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Digester</span> {
-    <span class="directive">public</span> <span class="directive">static</span> <span class="predefined-type">String</span> iterativeHash(<span class="predefined-type">String</span> text, <span class="type">int</span> iterationCount) {
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="integer">0</span>; i &lt; iterationCount; i++) {
-            text = DigestUtils.sha256Hex(text);
-        }
-
-        <span class="keyword">return</span> text;
+<pre class="CodeRay highlight"><code data-lang="groovy">jar {
+    manifest {
+        attributes(<span class="string"><span class="delimiter">&quot;</span><span class="content">Implementation-Title</span><span class="delimiter">&quot;</span></span>: project.name,
+                   <span class="string"><span class="delimiter">&quot;</span><span class="content">Implementation-Version</span><span class="delimiter">&quot;</span></span>: project.version)
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You now have something to compile and package into a JAR file, so run the <code>assemble</code> task again. This time you’ll see the build fail during the <code>compileJava</code> task as the compiler can’t find the <code>DigestUtils</code> class. It’s time to add a library dependency!</p>
+<p>You can verify the effect by:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>running <code>gradle jar</code> again</p>
+</li>
+<li>
+<p>running <code>jar xf build/libs/mylib-0.1.0.jar META-INF/MANIFEST.MF</code></p>
+</li>
+<li>
+<p>viewing the <code>META-INF/MANIFEST.MF</code> file that&#8217;s now in your project</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You should see the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Manifest-Version: 1.0
+Implementation-Title: mylib
+Implementation-Version: 0.1.0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can complete this exercise by trying to compile some Java code that uses the library you just built.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_adding_dependencies"><a class="anchor" href="#_adding_dependencies"></a>Adding dependencies</h2>
+<h2 id="_consume_the_library"><a class="anchor" href="#_consume_the_library"></a>Consume the library</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Gradle has built-in dependency management, so you don’t have to track down the relevant JAR files and copy them into the project. Instead, all you need to do is tell Gradle where to look for dependencies and specify which ones you want.</p>
-</div>
-<div class="paragraph">
-<p>Open up the <em>build.gradle</em> file in a text editor or your IDE. It’s quite noisy as it has a lot of comments in it (using Java comment syntax). Ignore the comments and you’re left with something very concise:</p>
+<p>Create a new Java file in the root of the project called <code>Main.java</code> and put the following code in it:</p>
 </div>
 <div class="listingblock">
+<div class="title">Main.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">java</span><span class="delimiter">'</span></span>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">org.example.mylib.Greeter</span>;
 
-repositories {
-    jcenter()
-}
-
-dependencies {
-    compile <span class="string"><span class="delimiter">'</span><span class="content">org.slf4j:slf4j-api:1.7.21</span><span class="delimiter">'</span></span>
-
-    testCompile <span class="string"><span class="delimiter">'</span><span class="content">junit:junit:4.12</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The first line, which applies the <code>java</code> plugin, is the most important as it allows you to build Java projects easily, particularly if they follow conventions on directory structure. This project does follow the conventions and so you get the compilation, testing and packaging for free with this one line.</p>
-</div>
-<div class="paragraph">
-<p>The next two sections are relevant to Java dependencies. Unlike with Apache Maven, there is no default search repository for dependencies, so you have to declare at least one. Fortunately, it’s very easy to add either of the two main repositories: Maven Central and JCenter. If you’d prefer to use Maven Central, simply replace the <code>jcenter()</code> with <code>mavenCentral()</code>. They are largely interchangeable.</p>
-</div>
-<div class="paragraph">
-<p>Then you have the dependencies themselves. This sample library obviously has no need for SLF4J at this point, but it does need Commons Codec at compile time. So replace the line</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.slf4j:slf4j-api:1.7.21</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>with</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">commons-codec:commons-codec:1.10</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The first part of this line specifies which configuration to add the dependency to. If you’ve used Apache Ivy in the past, you should already be familiar with the concept of a configuration. In the case of the <code>compile</code> configuration, all the dependencies declared with it are included on the Java compiler’s classpath. Apache Maven uses scopes to provide a similar effect.</p>
-</div>
-<div class="paragraph">
-<p>The other main configurations are: <code>runtime</code>, <code>testCompile</code> and <code>testRuntime</code>. You can learn more about these in the <a href="https://docs.gradle.org/current/userguide/userguide_single.html#sec:java_plugin_and_dependency_management">user manual</a>.</p>
-</div>
-<div class="paragraph">
-<p>The second part of the line is known as the dependency coordinate. It uniquely identifies the library using a group, name and version (or <em>groupId</em>, <em>artifactId</em> and <em>version</em> in Apache Maven terminology). Each component of the coordinate is separated with a colon and you can include a classifier as well.</p>
-</div>
-<div class="paragraph">
-<p>Save the changes to <em>build.gradle</em> and run the <code>assemble</code> task again. The compilation will now be successful and the build will create a JAR file in <em>build/libs</em>. The name of that JAR will depend on the name of the project. If you’re unhappy with the current name, which should be the same as the name of your project directory, you can open up the <em>settings.gradle</em> file and look for the line</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">rootProject.name = <span class="string"><span class="delimiter">'</span><span class="content">...</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Just change the text inside the quotes to change the name of the project. You will also note that the name of the JAR file doesn’t include a version. That makes sense as Gradle currently has no idea what the project version is. Let’s fix that by adding the following two lines to <em>build.gradle</em>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">java</span><span class="delimiter">'</span></span>
-
-group = <span class="string"><span class="delimiter">'</span><span class="content">org.example</span><span class="delimiter">'</span></span>
-version = <span class="string"><span class="delimiter">'</span><span class="content">1.0-SNAPSHOT</span><span class="delimiter">'</span></span>
-...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The group isn’t important for this guide as it’s mainly relevant to publishing libraries, but it’s good to get into the habit of specifying a group with the version. The version can be anything you like, but this example follows the Maven archetype convention of starting with a snapshot.</p>
-</div>
-<div class="paragraph">
-<p>Before you run the <code>assemble</code> task again, there’s one very minor issue: the previous JAR file will remain where it is as the new JAR file will have a different name that includes the version. You could run <code>clean</code>, but that will force a recompilation as well, which isn’t strictly necessary. Fortunately, Gradle allows you to clean the output generated by a specific task using the pattern <code>clean&lt;Task&gt;</code>. This is an example of a <a href="https://docs.gradle.org/current/userguide/userguide_single.html#sec:task_rules">task rule</a>.</p>
-</div>
-<div class="paragraph">
-<p>So, to ensure the previous JAR is removed without forcing a recompilation, run this:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>./gradlew cleanJar assemble</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You’ll now have a JAR file whose name includes the version. You can use this with other Java projects as is, but is it reliable? Where are the tests?</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_running_unit_tests"><a class="anchor" href="#_running_unit_tests"></a>Running unit tests</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>When you run the task <code>build</code>, you’ll see that it triggers a task called <code>test</code> but nothing happens. That’s because there are no unit tests yet. As a first step, you need to create one.</p>
-</div>
-<div class="paragraph">
-<p>By convention, unit tests go in the <em>src/test/java</em> directory. The test class names aren’t critical, but typically they a formed from the name of the class under test with a speific suffix, like “Test” or “Tests”. In this example, we’ll follow the latter naming convention, so create the file <em>src/test/java/org/example/DigesterTests.java</em> and set its content to the following:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example</span>;
-
-<span class="keyword">import</span> <span class="include">org.junit.Test</span>;
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.junit.Assert</span>.*;
-
-<span class="directive">public</span> <span class="type">class</span> <span class="class">DigesterTests</span> {
-    <span class="annotation">@Test</span>
-    <span class="directive">public</span> <span class="type">void</span> testIterativeHash() {
-        assertEquals(
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a</span><span class="delimiter">&quot;</span></span>,
-                Digester.iterativeHash(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello world!</span><span class="delimiter">&quot;</span></span>, <span class="integer">1</span>).toLowerCase());
-        assertEquals(
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">2c31414b16a4ba22c71230c5e5e500498b0155ddac2fb0c1ea83004c4a694f91</span><span class="delimiter">&quot;</span></span>,
-                Digester.iterativeHash(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello world!</span><span class="delimiter">&quot;</span></span>, <span class="integer">5</span>).toLowerCase());
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Main</span> {
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span>... args) {
+        <span class="predefined-type">System</span>.out.println(<span class="keyword">new</span> Greeter(<span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>).getGreeting());
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now when you run <code>./gradlew test</code>, you’ll get a unit test report at <em>build/reports/tests/test/index.html</em> that you can open in a browser.</p>
-</div>
-<div class="paragraph">
-<p>You can also configure many aspects of the unit tests through the following syntax:</p>
+<p>If you now try to compile this file, you&#8217;ll get the following error:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">test {
-    useTestNG()
-    maxHeapSize = <span class="string"><span class="delimiter">&quot;</span><span class="content">512m</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
+<pre>$ javac Main
+Main.java:1: error: package org.example.mylib does not exist
+import org.example.mylib.Greeter;
+                        ^
+Main.java:5: error: cannot find symbol
+        System.out.println(new Greeter("Gradle").getGreeting());
+                               ^
+  symbol:   class Greeter
+  location: class Main
+2 errors</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example is changing the default behavior of the <code>test</code> task directly, switching to TestNG as the test framework and giving the separate unit test JVM a larger heap. You can learn about all the available options in the <a href="https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html">DSL reference for the <code>Test</code> task type</a>.</p>
-</div>
-<div class="paragraph">
-<p>With appropriate plugins and configuration, you can easily add support for other verification steps, including integration tests and static code analysis with tools such as FindBugs. Covering those is unfortunately outside the scope of this guide, but it’s useful to know what you can do in your own builds.</p>
-</div>
-<div class="paragraph">
-<p>You now have a fully working Java build that includes the core steps: compilation, testing, and packaging. There is just one more customization we want to show, because it’s quite common. How to generate source and javadoc JARs.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_source_and_javadoc_jars"><a class="anchor" href="#_source_and_javadoc_jars"></a>Source and Javadoc JARs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The Gradle Java plugin only creates the main library JAR by default. This is often what you want, but IDEs like to have access to JARs containing the source files and Javadoc documentation as well. Fortunately this is easy to configure.</p>
-</div>
-<div class="paragraph">
-<p>The following example demonstrates how to create <code>Jar</code> tasks for both sources and Javadocs and integrate those into the rest of the build:</p>
+<p>Let&#8217;s fix that quickly by including our JAR file on the compilation classpath:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">task sourcesJar(<span class="key">type</span>: Jar) {
-    appendix = <span class="string"><span class="delimiter">&quot;</span><span class="content">sources</span><span class="delimiter">&quot;</span></span>
-    from sourceSets.main.allSource
-}
-
-task javadocJar(<span class="key">type</span>: Jar) {
-    appendix = <span class="string"><span class="delimiter">&quot;</span><span class="content">javadoc</span><span class="delimiter">&quot;</span></span>
-    from javadoc
-}
-
-assemble.dependsOn sourcesJar, javadocJar</code></pre>
+<pre>$ javac -cp .:build/libs/mylib-0.1.0.jar Main.java</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When you run the <code>assemble</code> task now, you’ll find a <em>-sources</em> JAR and a <em>-javadoc</em> one in the <em>build/libs</em> directory. You should also take this opportunity to check what is in those JAR files using either the <code>jar tf &lt;file&gt;</code> command or some other option for viewing the contents of zip files.</p>
+<p>Finally, run the application to test everything is working:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ java -cp .:build/libs/mylib-0.1.0.jar Main
+Hello Gradle</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>The above example makes use of Gradle’s rich API to easily grab the files you need for each JAR file. The source files come from the Java plugin’s <a href="https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_source_sets">concept of source sets</a>, whereas the Javadoc files come from the <a href="https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks">output of the <code>javadoc</code> task</a>. This is just a taste of some of the powerful concepts provided by Gradle.</p>
-</div>
-<div class="paragraph">
-<p>This example also shows you how easy it is to insert tasks into the overall build’s task graph using the <code>dependsOn()</code> method. You can declare this when you first create the task or, as in this case, after the task has already been declared.</p>
+<p>That&#8217;s it as you have now successfully created the JAR file and used the library with a separate application.</p>
 </div>
 </div>
 </div>
@@ -944,36 +820,57 @@ assemble.dependsOn sourcesJar, javadocJar</code></pre>
 <h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In this guide, you learned how to set up and execute a basic Java library build using the Java plugin. It introduced you to:</p>
+<p>In this Getting Started guide, you learned how to:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Repositories and dependencies</p>
+<p>apply the Java plugin so that you can build a Java library project</p>
 </li>
 <li>
-<p>Configurations</p>
+<p>structure your project to minimize configuration</p>
 </li>
 <li>
-<p>The Java plugin directory structure conventions</p>
+<p>build the JAR file</p>
 </li>
 <li>
-<p>Tasks for compiling, testing and packaging Java code</p>
-</li>
-<li>
-<p>Customizing the build</p>
+<p>customize the name of the JAR file and the content of its manifest</p>
 </li>
 </ul>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next steps</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>This just scratches the surface of what you can do to mold the build to your own project’s requirements, but it hopefully gives you a sense of how easy it is to get things going if you follow the conventions. And most builds follow the conventions with only small parts affected by special project requirements.</p>
+<p>There are many directions you may want to go from here, the most common of which include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Consuming the Java library in a multi-project build</p>
+</li>
+<li>
+<p>Publishing the library to a Maven-compatible repository</p>
+</li>
+<li>
+<p>Building a Java web application</p>
+</li>
+<li>
+<p>Incorporating unit tests into the project</p>
+</li>
+<li>
+<p>Incorporating integration and functional tests into the project</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-01 15:18:09 BST
+Last updated 2016-09-05 17:59:26 BST
 </div>
 </div>
 </body>
