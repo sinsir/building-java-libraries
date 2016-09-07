@@ -548,10 +548,10 @@ table.CodeRay td.code>pre{padding:0}
 <div class="ulist">
 <ul>
 <li>
-<p>About 5 minutes</p>
+<p>About 10 minutes</p>
 </li>
 <li>
-<p>A text editor</p>
+<p>A text editor or IDE</p>
 </li>
 <li>
 <p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK), version 1.7 or better</p>
@@ -594,7 +594,7 @@ $ mkdir -p src/main/java/org/example/mylib</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You now have all the necessary components for a standard Java library project. The next step is to create a build for it, so add a <code>build.gradle</code> file in the root of the project and have it apply Gradle&#8217;s <a href="https://docs.gradle.org/3.0/userguide//java_plugin.html">Java plugin</a> with the following content:</p>
+<p>You now have all the necessary components for a simple Java library project. The next step is to create a Gradle build script capable of compiling and packaging the library into a JAR. To do so, add a file named <code>build.gradle</code> in the root of the project and have it apply Gradle&#8217;s <a href="https://docs.gradle.org/3.0/userguide//java_plugin.html">Java plugin</a> as follows:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -626,7 +626,7 @@ BUILD SUCCESSFUL</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The output is telling you that running the <code>jar</code> task results:</p>
+<p>The output is telling you that running the <code>jar</code> task results in:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -680,7 +680,7 @@ org/example/Greeter.class</pre>
 <h2 id="_configure_the_jar"><a class="anchor" href="#_configure_the_jar"></a>Configure the JAR</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You will often want the name of the JAR file to include the library version. This is easily achieved by setting a top-level <code>version</code> property in the build file, like so:</p>
+<p>You will often want the name of the JAR file to include the library version. This is easily achieved by setting a top-level <code>version</code> property in the build script, like so:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -702,7 +702,7 @@ version = <span class="string"><span class="delimiter">'</span><span class="cont
 <p>will result in the build creating the file <code>build/libs/mylib-0.1.0.jar</code>.</p>
 </div>
 <div class="paragraph">
-<p>Another common requirement is to customize the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by adding the following code to the end of the build file:</p>
+<p>Another common requirement is to customize the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -784,7 +784,7 @@ Implementation-Version: 0.1.0</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ javac Main
+<pre>$ javac Main.java
 Main.java:1: error: package org.example.mylib does not exist
 import org.example.mylib.Greeter;
                         ^
@@ -830,7 +830,7 @@ Hello, Gradle!</pre>
 <p>Run the Java plugin&#8217;s <code>jar</code> task and examine its output</p>
 </li>
 <li>
-<p>Customize the name of JAR file and the content of its manifest</p>
+<p>Customize the name of a JAR file and the content of its manifest</p>
 </li>
 </ul>
 </div>
@@ -840,7 +840,7 @@ Hello, Gradle!</pre>
 <h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next steps</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Of course, building a library is one aspect of effective code reuse. From here, you may be interested in:</p>
+<p>Building a library is just one aspect of reusing code across project boundaries. From here, you may be interested in:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -851,7 +851,7 @@ Hello, Gradle!</pre>
 <p><a href="https://docs.gradle.org/3.0/userguide//artifact_management.html">Publishing JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide//intro_multi_project_builds.html">Multi-project builds</a></p>
+<p><a href="https://docs.gradle.org/3.0/userguide//intro_multi_project_builds.html">Working with multi-project builds</a></p>
 </li>
 </ul>
 </div>
@@ -860,7 +860,7 @@ Hello, Gradle!</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-06 15:17:49 +02:00
+Last updated 2016-09-07 14:00:55 +02:00
 </div>
 </div>
 </body>
