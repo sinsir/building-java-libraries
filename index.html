@@ -698,7 +698,7 @@ version = <span class="string"><span class="delimiter">'</span><span class="cont
 </div>
 </div>
 <div class="paragraph">
-<p>and notice that resulting JAR file at <code>build/libs/mylib-0.1.0.jar</code> contains the version as expected.</p>
+<p>and notice that the resulting JAR file at <code>build/libs/mylib-0.1.0.jar</code> contains the version as expected.</p>
 </div>
 <div class="paragraph">
 <p>Another common requirement is customizing the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
@@ -715,7 +715,7 @@ version = <span class="string"><span class="delimiter">'</span><span class="cont
 </div>
 </div>
 <div class="paragraph">
-<p>To confirm that these changes work as as expected, run the <code>jar</code> task again, and this time also unpack the manifest file from the JAR:</p>
+<p>To confirm that these changes work as expected, run the <code>jar</code> task again, and this time also unpack the manifest file from the JAR:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -724,7 +724,7 @@ $ jar xf build/libs/mylib-0.1.0.jar META-INF/MANIFEST.MF</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now view the contents of the <code>META-INF/MANIFEST.MF</code> file and you should see the following contents:</p>
+<p>Now view the contents of the <code>META-INF/MANIFEST.MF</code> file and you should see the following:</p>
 </div>
 <div class="listingblock">
 <div class="title">META-INF/MANIFEST.MF</div>
@@ -853,7 +853,7 @@ Hello, Gradle!</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-07 15:51:23 +02:00
+Last updated 2016-09-07 18:09:16 +02:00
 </div>
 </div>
 </body>
