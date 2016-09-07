@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Building a Java Library</title>
+<title>Building JVM Libraries</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -511,18 +511,18 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Building a Java Library</h1>
+<h1>Building JVM Libraries</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_what_you_ll_build">What you’ll build</a></li>
-<li><a href="#_what_you_ll_need">What you’ll need</a></li>
-<li><a href="#_create_a_new_java_library_project">Create a new Java library project</a></li>
-<li><a href="#_build_the_library">Build the library</a></li>
-<li><a href="#_configure_the_jar">Configure the JAR</a></li>
-<li><a href="#_consume_the_library">Consume the library</a></li>
-<li><a href="#_summary">Summary</a></li>
-<li><a href="#_next_steps">Next steps</a></li>
+<li><a href="#what_you_ll_build">What you’ll build</a></li>
+<li><a href="#what_you_ll_need">What you’ll need</a></li>
+<li><a href="#create_a_library_project">Create a library project</a></li>
+<li><a href="#assemble_the_library_jar">Assemble the library JAR</a></li>
+<li><a href="#customize_the_library_jar">Customize the library JAR</a></li>
+<li><a href="#consume_the_library_jar">Consume the library JAR</a></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#next_steps">Next steps</a></li>
 </ul>
 </div>
 </div>
@@ -530,20 +530,20 @@ table.CodeRay td.code>pre{padding:0}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>This guide walks you through the process of using Gradle to produce a Java library suitable for sharing with other JVM-based projects.</p>
+<p>This guide walks you through the process of using Gradle to produce a JVM library suitable for consumption by other JVM libraries and applications.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_you_ll_build"><a class="anchor" href="#_what_you_ll_build"></a>What you’ll build</h2>
+<h2 id="what_you_ll_build"><a class="anchor" href="#what_you_ll_build"></a>What you’ll build</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You&#8217;ll write a simple Java class and then use Gradle to compile and package it into a new library named <code>mylib</code>. The result will be a Java Archive (<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/jar/index.html">JAR</a>) containing the compiled class and a default manifest file. Along the way, you&#8217;ll configure Gradle to include the library <em>version</em> in the name of the JAR file and in the manifest. When complete, you&#8217;ll verify that the library is well-formed by consuming it in a basic command-line application.</p>
+<p>You&#8217;ll start by creating a Java library project consisting of a single class. You&#8217;ll then use Gradle to compile and package the library into a <em>Java Archive</em> (<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/jar/index.html">JAR</a>) that contains the compiled class and a default manifest file. Next, you&#8217;ll configure your Gradle build script to customize the name of the JAR and the contents of its manifest. Finally, you&#8217;ll verify that the library JAR is well-formed by consuming it from a separate command-line application.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_you_ll_need"><a class="anchor" href="#_what_you_ll_need"></a>What you’ll need</h2>
+<h2 id="what_you_ll_need"><a class="anchor" href="#what_you_ll_need"></a>What you’ll need</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -564,10 +564,10 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="_create_a_new_java_library_project"><a class="anchor" href="#_create_a_new_java_library_project"></a>Create a new Java library project</h2>
+<h2 id="create_a_library_project"><a class="anchor" href="#create_a_library_project"></a>Create a library project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Create a new project directory named <code>mylib</code> and initialize the directory structure that will hold your library classes, for example by running the following commands on a Unix-like system:</p>
+<p>Create a new project directory named <code>mylib</code> and initialize the directory structure that will contain your library&#8217;s sources, for example by running the following commands on a Unix-like system:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -577,7 +577,7 @@ $ mkdir -p src/main/java/org/example/mylib</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now create the <code>Greeter</code> class using the following content:</p>
+<p>Now create a class named <code>Greeter</code> as follows:</p>
 </div>
 <div class="listingblock">
 <div class="title">src/main/java/org/example/mylib/Greeter.java</div>
@@ -594,7 +594,7 @@ $ mkdir -p src/main/java/org/example/mylib</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You now have all the necessary components for a simple Java library project. The next step is to create a Gradle build script capable of compiling and packaging the library into a JAR. To do so, add a file named <code>build.gradle</code> in the root of the project and have it apply Gradle&#8217;s <a href="https://docs.gradle.org/3.0/userguide//java_plugin.html">Java plugin</a> as follows:</p>
+<p>You now have the necessary components for a simple Java library project. The next step is to create a Gradle build script capable of compiling and packaging the library into a JAR. To do so, add a file named <code>build.gradle</code> in the root of the project and apply Gradle&#8217;s <a href="https://docs.gradle.org/3.0/userguide/java_plugin.html">Java plugin</a> as follows:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -603,16 +603,15 @@ $ mkdir -p src/main/java/org/example/mylib</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Once you&#8217;ve saved the file, you&#8217;re ready to build your library.</p>
+<p>Once you&#8217;ve saved the file, you&#8217;re ready to assemble your library JAR.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_build_the_library"><a class="anchor" href="#_build_the_library"></a>Build the library</h2>
+<h2 id="assemble_the_library_jar"><a class="anchor" href="#assemble_the_library_jar"></a>Assemble the library JAR</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Java plugin <a href="https://docs.gradle.org/3.0/userguide//java_plugin.html#sec:java_tasks">adds a number of tasks</a> to your project, including a <code>jar</code> task. To build your library,
-run <code>gradle jar</code>, like so:</p>
+<p>The Java plugin <a href="https://docs.gradle.org/3.0/userguide/java_plugin.html#sec:java_tasks">adds a number of tasks</a> to your project, including a <code>jar</code> task. To assemble your library JAR, run <code>gradle jar</code>, like so:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -626,18 +625,18 @@ BUILD SUCCESSFUL</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The output is telling you that running the <code>jar</code> task results in:</p>
+<p>The output above tells you that running the <code>jar</code> task causes Gradle to:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>compiling the Java source code</p>
+<p>compile the Java source code</p>
 </li>
 <li>
-<p>processing any resource files</p>
+<p>process any resource files</p>
 </li>
 <li>
-<p>packaging everything up into a JAR file</p>
+<p>package everything up into a JAR file</p>
 </li>
 </ol>
 </div>
@@ -649,7 +648,7 @@ BUILD SUCCESSFUL</pre>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>All of this happens without any additional configuration in <code>build.gradle</code> because the Java plugin assumes your project&#8217;s sources are arranged in a <a href="https://docs.gradle.org/3.0/userguide/java_plugin.html#sec:java_project_layout">conventional project layout</a>. You can change the project layout if you wish <a href="https://docs.gradle.org/3.0/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
+<p>All of this happens without any additional configuration in <code>build.gradle</code> because Gradle&#8217;s Java plugin assumes your project sources are arranged in a <a href="https://docs.gradle.org/3.0/userguide/java_plugin.html#sec:java_project_layout">conventional project layout</a>. You can customize the project layout if you wish <a href="https://docs.gradle.org/3.0/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
 </div>
 </td>
 </tr>
@@ -672,15 +671,15 @@ org/example/Greeter.class</pre>
 <p>You should see the required manifest file—<code>MANIFEST.MF</code>—and the compiled <code>Greeter</code> class.</p>
 </div>
 <div class="paragraph">
-<p>At this point, your library is ready to be consumed by other JVM-based projects, but there are a couple of improvements you can make first. We&#8217;ll look at those next.</p>
+<p>At this point, your library is ready to be consumed by other JVM-based projects, but there are a couple of customizations you may want to make first. We&#8217;ll look at those next.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_configure_the_jar"><a class="anchor" href="#_configure_the_jar"></a>Configure the JAR</h2>
+<h2 id="customize_the_library_jar"><a class="anchor" href="#customize_the_library_jar"></a>Customize the library JAR</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You will often want the name of the JAR file to include the library version. This is easily achieved by setting a top-level <code>version</code> property in the build script, like so:</p>
+<p>You will often want the name of the JAR file to include the library <em>version</em>. This is easily achieved by setting a top-level <code>version</code> property in the build script, like so:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -691,18 +690,18 @@ version = <span class="string"><span class="delimiter">'</span><span class="cont
 </div>
 </div>
 <div class="paragraph">
-<p>Re-running the <code>jar</code> task after a <code>clean</code> via this command:</p>
+<p>Now run the <code>jar</code> task once more:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ gradle clean jar</pre>
+<pre>$ gradle jar</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>will result in the build creating the file <code>build/libs/mylib-0.1.0.jar</code>.</p>
+<p>and notice that resulting JAR file at <code>build/libs/mylib-0.1.0.jar</code> contains the version as expected.</p>
 </div>
 <div class="paragraph">
-<p>Another common requirement is to customize the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
+<p>Another common requirement is customizing the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -716,29 +715,23 @@ version = <span class="string"><span class="delimiter">'</span><span class="cont
 </div>
 </div>
 <div class="paragraph">
-<p>You can verify the effect by:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>running <code>gradle jar</code> again</p>
-</li>
-<li>
-<p>running <code>jar xf build/libs/mylib-0.1.0.jar META-INF/MANIFEST.MF</code></p>
-</li>
-<li>
-<p>viewing the <code>META-INF/MANIFEST.MF</code> file that&#8217;s now in your project</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>You should see the following:</p>
+<p>To confirm that these changes work as as expected, run the <code>jar</code> task again, and this time also unpack the manifest file from the JAR:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Manifest-Version: 1.0
+<pre>$ gradle jar
+$ jar xf build/libs/mylib-0.1.0.jar META-INF/MANIFEST.MF</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now view the contents of the <code>META-INF/MANIFEST.MF</code> file and you should see the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="title">META-INF/MANIFEST.MF</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="mf">Manifest-Version: 1.0
 Implementation-Title: mylib
-Implementation-Version: 0.1.0</pre>
+Implementation-Version: 0.1.0</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -762,7 +755,7 @@ Implementation-Version: 0.1.0</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_consume_the_library"><a class="anchor" href="#_consume_the_library"></a>Consume the library</h2>
+<h2 id="consume_the_library_jar"><a class="anchor" href="#consume_the_library_jar"></a>Consume the library JAR</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Create a new Java file in the root of the project called <code>Main.java</code> and put the following code in it:</p>
@@ -816,7 +809,7 @@ Hello, Gradle!</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<h2 id="summary"><a class="anchor" href="#summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>That&#8217;s it! You&#8217;ve now successfully built a Java library project, packaged it as a JAR and consumed it within a separate application. Along the way, you&#8217;ve learned how to:</p>
@@ -837,7 +830,7 @@ Hello, Gradle!</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next steps</h2>
+<h2 id="next_steps"><a class="anchor" href="#next_steps"></a>Next steps</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Building a library is just one aspect of reusing code across project boundaries. From here, you may be interested in:</p>
@@ -845,13 +838,13 @@ Hello, Gradle!</pre>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide//artifact_dependencies_tutorial.html">Consuming JVM libraries</a></p>
+<p><a href="https://docs.gradle.org/3.0/userguide/artifact_dependencies_tutorial.html">Consuming JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide//artifact_management.html">Publishing JVM libraries</a></p>
+<p><a href="https://docs.gradle.org/3.0/userguide/artifact_management.html">Publishing JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide//intro_multi_project_builds.html">Working with multi-project builds</a></p>
+<p><a href="https://docs.gradle.org/3.0/userguide/intro_multi_project_builds.html">Working with multi-project builds</a></p>
 </li>
 </ul>
 </div>
@@ -860,7 +853,7 @@ Hello, Gradle!</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-07 14:00:55 +02:00
+Last updated 2016-09-07 15:51:23 +02:00
 </div>
 </div>
 </body>
