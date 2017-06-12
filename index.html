@@ -5,6 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
+<meta name="author" content="Chris Beams, Schalk Cronjé">
 <title>Building Java Libraries</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="./coderay-asciidoctor.css">
@@ -32,6 +33,9 @@
 </head>
 <body class="article toc2 toc-right">
 <div id="header"><div style="padding-top: 10px;"><a href="https://guides.gradle.org"><img src="http://guides.gradle.org/gradle-guides.svg" alt=""></a></div><h1>Building Java Libraries</h1>
+<div class="details">
+<span id="author" class="author">Chris Beams, Schalk Cronjé</span><br>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -170,7 +174,7 @@ BUILD SUCCESSFUL</pre>
 <div class="listingblock">
 <div class="title">Generated settings.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">rootProject.name = <span class="string"><span class="delimiter">'</span><span class="content">building-java-libraries</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">rootProject.name=<span class="string"><span class="delimiter">'</span><span class="content">building-java-libraries</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -199,6 +203,15 @@ dependencies {
     implementation <span class="string"><span class="delimiter">'</span><span class="content">com.google.guava:guava:21.0</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
 
     testImplementation <span class="string"><span class="delimiter">'</span><span class="content">junit:junit:4.12</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+}
+
+version = <span class="string"><span class="delimiter">'</span><span class="content">0.1.0</span><span class="delimiter">'</span></span>
+
+jar {
+    manifest {
+        attributes(<span class="string"><span class="delimiter">'</span><span class="content">Implementation-Title</span><span class="delimiter">'</span></span>: project.name,
+                   <span class="string"><span class="delimiter">'</span><span class="content">Implementation-Version</span><span class="delimiter">'</span></span>: project.version)
+    }
 }</code></pre>
 </div>
 </div>
@@ -511,7 +524,7 @@ BUILD SUCCESSFUL</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-05-30 15:32:05 UTC
+Last updated 2017-06-12 19:42:44 UTC
 </div>
 </div>
 </body>
