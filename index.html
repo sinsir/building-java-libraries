@@ -134,7 +134,7 @@
 <p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK), version 1.7 or better</p>
 </li>
 <li>
-<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.5 or better</p>
+<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.6 or better</p>
 </li>
 </ul>
 </div>
@@ -169,7 +169,7 @@ $ cd building-java-libraries</pre>
 :wrapper
 :init
 
-BUILD SUCCESSFUL in 5s
+BUILD SUCCESSFUL in 4s
 2 actionable tasks: 2 executed</pre>
 </div>
 </div>
@@ -289,7 +289,7 @@ jar {
 </table>
 </div>
 <div class="paragraph">
-<p>The <code>build.gradle</code> adds the <a href="https://docs.gradle.org/4.5/userguide/java_library_plugin.html">java-library</a> plugin. This is an extension of the <code>java-base</code> plugin and adds additional tasks for compiling Java source code.</p>
+<p>The <code>build.gradle</code> adds the <a href="https://docs.gradle.org/4.6/userguide/java_library_plugin.html">java-library</a> plugin. This is an extension of the <code>java-base</code> plugin and adds additional tasks for compiling Java source code.</p>
 </div>
 <div class="paragraph">
 <p>The file <code>src/main/java/Library.java</code> is shown here:</p>
@@ -346,7 +346,7 @@ jar {
 :check
 :build
 
-BUILD SUCCESSFUL in 8s
+BUILD SUCCESSFUL in 12s
 4 actionable tasks: 4 executed</pre>
 </div>
 </div>
@@ -398,7 +398,7 @@ Library.class</pre>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>All of this happens without any additional configuration in <code>build.gradle</code> because Gradle&#8217;s <code>java-library</code> plugin assumes your project sources are arranged in a <a href="https://docs.gradle.org/4.5/userguide/java_plugin.html#sec:java_project_layout">conventional project layout</a>. You can customize the project layout if you wish <a href="https://docs.gradle.org/4.5/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
+<p>All of this happens without any additional configuration in <code>build.gradle</code> because Gradle&#8217;s <code>java-library</code> plugin assumes your project sources are arranged in a <a href="https://docs.gradle.org/4.6/userguide/java_plugin.html#sec:java_project_layout">conventional project layout</a>. You can customize the project layout if you wish <a href="https://docs.gradle.org/4.6/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
 </div>
 </td>
 </tr>
@@ -433,7 +433,7 @@ Library.class</pre>
 <p>and notice that the resulting JAR file at <code>build/libs/building-java-libraries-0.1.0.jar</code> contains the version as expected.</p>
 </div>
 <div class="paragraph">
-<p>Another common requirement is customizing the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/4.5/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
+<p>Another common requirement is customizing the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/4.6/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -475,7 +475,7 @@ Implementation-Version: 0.1.0</code></pre>
 <td class="content">
 <div class="title">Learn more about configuring JARs</div>
 <div class="paragraph">
-<p>The <code>manifest</code> is just one of many properties that can be configured on the <code>jar</code> task. For a complete list, see the <a href="https://docs.gradle.org/4.5/dsl/org.gradle.api.tasks.bundling.Jar.html">Jar section</a> of the <a href="https://docs.gradle.org/4.5/dsl/">Gradle Language Reference</a> as well as the <a href="https://docs.gradle.org/4.5/userguide/java_plugin.html#sec:jar">Jar</a> and <a href="https://docs.gradle.org/4.5/userguide/working_with_files.html#sec:archives">Creating Archives</a> sections of the Gradle <a href="https://docs.gradle.org/4.5/userguide/userguide.html">User Manual</a>.</p>
+<p>The <code>manifest</code> is just one of many properties that can be configured on the <code>jar</code> task. For a complete list, see the <a href="https://docs.gradle.org/4.6/dsl/org.gradle.api.tasks.bundling.Jar.html">Jar section</a> of the <a href="https://docs.gradle.org/4.6/dsl/">Gradle Language Reference</a> as well as the <a href="https://docs.gradle.org/4.6/userguide/java_plugin.html#sec:jar">Jar</a> and <a href="https://docs.gradle.org/4.6/userguide/working_with_files.html#sec:archives">Creating Archives</a> sections of the Gradle <a href="https://docs.gradle.org/4.6/userguide/userguide.html">User Manual</a>.</p>
 </div>
 </td>
 </tr>
@@ -564,13 +564,13 @@ BUILD SUCCESSFUL in 1s
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.gradle.org/4.5/userguide/artifact_dependencies_tutorial.html">Consuming JVM libraries</a></p>
+<p><a href="https://docs.gradle.org/4.6/userguide/artifact_dependencies_tutorial.html">Consuming JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.5/userguide/artifact_management.html">Publishing JVM libraries</a></p>
+<p><a href="https://docs.gradle.org/4.6/userguide/artifact_management.html">Publishing JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.5/userguide/intro_multi_project_builds.html">Working with multi-project builds</a></p>
+<p><a href="https://docs.gradle.org/4.6/userguide/intro_multi_project_builds.html">Working with multi-project builds</a></p>
 </li>
 </ul>
 </div>
