@@ -62,7 +62,7 @@ gradleRunner {
 
         step "${sample.name}-unpackJar", { info ->
             copy {
-                from(zipTree(new File(workingDir, 'build/libs/building-java-libraries-0.1.0.jar'))) {
+                from(zipTree(new File(workingDir, "build/libs/${project.name}-0.1.0.jar"))) {
                     include 'META-INF/MANIFEST.MF'
                 }
                 into info.reportDir
