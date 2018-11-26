@@ -212,20 +212,10 @@
 <p>A text editor or IDE</p>
 </li>
 <li>
-<p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK)</p>
-<div class="ulist">
-<ul>
-<li>
-<p>version 7 or higher if using the Gradle Groovy DSL</p>
+<p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK) version 8 or higher</p>
 </li>
 <li>
-<p>version 8 or higher if using the Gradle Kotlin DSL</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.10-rc-2 or better</p>
+<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 5.0 or better</p>
 </li>
 </ul>
 </div>
@@ -257,18 +247,18 @@ $ cd building-java-libraries</pre>
 <div class="listingblock multi-language-sample">
 <div class="title">If you prefer the Groovy DSL</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">$ gradle init --type java-library
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">$ gradle init --type java-library --project-name jvm-library
 &gt; Task :wrapper
 &gt; Task :init
 
-BUILD SUCCESSFUL in 3s
+BUILD SUCCESSFUL in 4s
 2 actionable tasks: 2 executed</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">If you prefer the Kotlin DSL</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">$ gradle init --type java-library --dsl kotlin
+<pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">$ gradle init --type java-library --project-name jvm-library --dsl kotlin
 &gt; Task :wrapper
 &gt; Task :init
 
@@ -378,16 +368,16 @@ BUILD SUCCESSFUL in 0s
     id 'java-library'
 }
 
+repositories {
+    jcenter() <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
 dependencies {
     api 'org.apache.commons:commons-math3:3.6.1' <i class="conum" data-value="2"></i><b>(2)</b>
 
-    implementation 'com.google.guava:guava:23.0' <i class="conum" data-value="3"></i><b>(3)</b>
+    implementation 'com.google.guava:guava:26.0-jre' <i class="conum" data-value="3"></i><b>(3)</b>
 
     testImplementation 'junit:junit:4.12' <i class="conum" data-value="4"></i><b>(4)</b>
-}
-
-repositories {
-    jcenter() <i class="conum" data-value="1"></i><b>(1)</b>
 }</code></pre>
 </div>
 </div>
@@ -398,16 +388,16 @@ repositories {
     `java-library`
 }
 
+repositories {
+    jcenter() <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
 dependencies {
     api("org.apache.commons:commons-math3:3.6.1") <i class="conum" data-value="2"></i><b>(2)</b>
 
-    implementation("com.google.guava:guava:23.0") <i class="conum" data-value="3"></i><b>(3)</b>
+    implementation("com.google.guava:guava:26.0-jre") <i class="conum" data-value="3"></i><b>(3)</b>
 
     testImplementation("junit:junit:4.12") <i class="conum" data-value="4"></i><b>(4)</b>
-}
-
-repositories {
-    jcenter() <i class="conum" data-value="1"></i><b>(1)</b>
 }</code></pre>
 </div>
 </div>
@@ -432,15 +422,17 @@ repositories {
 </table>
 </div>
 <div class="paragraph">
-<p>The build script adds the <a href="https://docs.gradle.org/4.10-rc-2/userguide/java_library_plugin.html">java-library</a> plugin. This is an extension of the <code>java-base</code> plugin and adds additional tasks for compiling Java source code.</p>
+<p>The build script adds the <a href="https://docs.gradle.org/5.0/userguide/java_library_plugin.html">java-library</a> plugin. This is an extension of the <code>java-base</code> plugin and adds additional tasks for compiling Java source code.</p>
 </div>
 <div class="paragraph">
-<p>The file <code>src/main/java/Library.java</code> is shown here:</p>
+<p>The file <code>src/main/java/jvm/library/Library.java</code> is shown here:</p>
 </div>
 <div class="listingblock">
 <div class="title">Generated src/main/java/Library.java</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">public class Library {
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package jvm.library;
+
+public class Library {
     public boolean someLibraryMethod() {
         return true;
     }
@@ -448,12 +440,14 @@ repositories {
 </div>
 </div>
 <div class="paragraph">
-<p>The generated JUnit specification, <code>src/test/java/LibraryTest.java</code> is shown next:</p>
+<p>The generated JUnit specification, <code>src/test/java/jvm/library/LibraryTest.java</code> is shown next:</p>
 </div>
 <div class="listingblock">
 <div class="title">Generated  src/test/java/LibraryTest.java</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.junit.Test;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package jvm.library;
+
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LibraryTest {
@@ -486,10 +480,7 @@ public class LibraryTest {
 &gt; Task :compileTestJava
 &gt; Task :processTestResources NO-SOURCE
 &gt; Task :testClasses
-
 &gt; Task :test
-Picked up _JAVA_OPTIONS: -Xmx2048m -Xms512m
-
 &gt; Task :check
 &gt; Task :build
 
@@ -545,7 +536,7 @@ Library.class</pre>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>All of this happens without any additional configuration in the build script because Gradle&#8217;s <code>java-library</code> plugin assumes your project sources are arranged in a <a href="https://docs.gradle.org/4.10-rc-2/userguide/java_plugin.html#sec:java_project_layout">conventional project layout</a>. You can customize the project layout if you wish <a href="https://docs.gradle.org/4.10-rc-2/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
+<p>All of this happens without any additional configuration in the build script because Gradle&#8217;s <code>java-library</code> plugin assumes your project sources are arranged in a <a href="https://docs.gradle.org/5.0/userguide/java_plugin.html#sec:java_project_layout">conventional project layout</a>. You can customize the project layout if you wish <a href="https://docs.gradle.org/5.0/userguide/java_plugin.html#sec:changing_java_project_layout">as described in the user manual</a>.</p>
 </div>
 </td>
 </tr>
@@ -586,7 +577,7 @@ Library.class</pre>
 <p>and notice that the resulting JAR file at <code>build/libs/building-java-libraries-0.1.0.jar</code> contains the version as expected.</p>
 </div>
 <div class="paragraph">
-<p>Another common requirement is customizing the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/4.10-rc-2/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
+<p>Another common requirement is customizing the manifest file, typically by adding one or more attributes. Let&#8217;s include the library name and version in the manifest file by <a href="https://docs.gradle.org/5.0/userguide/more_about_tasks.html#sec:configuring_tasks">configuring the <code>jar</code> task</a>. Add the following to the end of your build script:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">build.gradle</div>
@@ -603,7 +594,7 @@ Library.class</pre>
 <div class="title">build.gradle.kts</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">tasks {
-    getByName&lt;Jar&gt;("jar") {
+    jar {
         manifest {
             attributes(
                 mapOf("Implementation-Title" to project.name,
@@ -643,7 +634,7 @@ Implementation-Version: 0.1.0</code></pre>
 <td class="content">
 <div class="title">Learn more about configuring JARs</div>
 <div class="paragraph">
-<p>The <code>manifest</code> is just one of many properties that can be configured on the <code>jar</code> task. For a complete list, see the <a href="https://docs.gradle.org/4.10-rc-2/dsl/org.gradle.api.tasks.bundling.Jar.html">Jar section</a> of the <a href="https://docs.gradle.org/4.10-rc-2/dsl/">Gradle Language Reference</a> as well as the <a href="https://docs.gradle.org/4.10-rc-2/userguide/java_plugin.html#sec:jar">Jar</a> and <a href="https://docs.gradle.org/4.10-rc-2/userguide/working_with_files.html#sec:archives">Creating Archives</a> sections of the Gradle <a href="https://docs.gradle.org/4.10-rc-2/userguide/userguide.html">User Manual</a>.</p>
+<p>The <code>manifest</code> is just one of many properties that can be configured on the <code>jar</code> task. For a complete list, see the <a href="https://docs.gradle.org/5.0/dsl/org.gradle.api.tasks.bundling.Jar.html">Jar section</a> of the <a href="https://docs.gradle.org/5.0/dsl/">Gradle Language Reference</a> as well as the <a href="https://docs.gradle.org/5.0/userguide/java_plugin.html#sec:jar">Jar</a> and <a href="https://docs.gradle.org/5.0/userguide/working_with_files.html#sec:archives">Creating Archives</a> sections of the Gradle <a href="https://docs.gradle.org/5.0/userguide/userguide.html">User Manual</a>.</p>
 </div>
 </td>
 </tr>
@@ -666,9 +657,8 @@ Implementation-Version: 0.1.0</code></pre>
 <div class="listingblock">
 <div class="title">src/main/java/Library.java</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">/**
- * This java source file was generated by the Gradle 'init' task.
- */
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package jvm.library;
+
 public class Library {
     public boolean someLibraryMethod() {
         return true;
@@ -686,9 +676,7 @@ public class Library {
 &gt; Task :compileJava
 &gt; Task :processResources NO-SOURCE
 &gt; Task :classes
-
 &gt; Task :javadoc
-Picked up _JAVA_OPTIONS: -Xmx2048m -Xms512m
 
 BUILD SUCCESSFUL in 1s
 2 actionable tasks: 2 executed</pre>
@@ -735,13 +723,13 @@ BUILD SUCCESSFUL in 1s
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.gradle.org/4.10-rc-2/userguide/artifact_dependencies_tutorial.html">Consuming JVM libraries</a></p>
+<p><a href="https://docs.gradle.org/5.0/userguide/artifact_dependencies_tutorial.html">Consuming JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.10-rc-2/userguide/artifact_management.html">Publishing JVM libraries</a></p>
+<p><a href="https://docs.gradle.org/5.0/userguide/artifact_management.html">Publishing JVM libraries</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.10-rc-2/userguide/intro_multi_project_builds.html">Working with multi-project builds</a></p>
+<p><a href="https://docs.gradle.org/5.0/userguide/intro_multi_project_builds.html">Working with multi-project builds</a></p>
 </li>
 </ul>
 </div>
