@@ -9,8 +9,14 @@
 ├── settings.gradle.kts
 └── src
     ├── main
-    │   └── java // <2>
-    │       └── Library.java
+    │   └── java // <2>
+    │   |   └── jvm
+    |   |        └──library
+    |   |            └──Library.java
+    |   └── resources
     └── test
         └── java // <3>
-            └── LibraryTest.java
+        |    └── jvm
+        |        └──library
+        |            └── LibraryTest.java
+        └── resources
