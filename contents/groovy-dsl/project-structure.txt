@@ -9,8 +9,8 @@
 ├── settings.gradle
 └── src
     ├── main
-    │   └── java // <2>
-    │   |   └── jvm
+    │   └── java // <2>
+    │   |   └── jvm
     |   |        └──library
     |   |            └──Library.java
     |   └── resources
